@@ -1,0 +1,138 @@
+{
+  "name": "apache_spark_out_of_memory_error_incident",
+  "description": "Apache Spark Out of Memory Error is a type of incident that occurs when the Apache Spark application running on a system is unable to allocate enough memory to perform its tasks. This can happen when the system's memory is insufficient or when there is a memory leak in the application's code. When this incident occurs, the application may crash, become unresponsive, or produce incorrect results. It is important to diagnose and resolve this issue as soon as possible to ensure the smooth functioning of the application.",
+  "params": [
+    {
+      "name": "NEW_MEMORY_LIMIT",
+      "value": ""
+    },
+    {
+      "name": "PATH_TO_SPARK_LOGS",
+      "value": ""
+    },
+    {
+      "name": "PATH_TO_SPARK_CONFIGURATION_FILE",
+      "value": ""
+    },
+    {
+      "name": "PID_OF_JAVA_PROCESS",
+      "value": ""
+    },
+    {
+      "name": "HOST_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    },
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Apache Spark Out of Memory Error incident.\nApache Spark Out of Memory Error is a type of incident that occurs when the Apache Spark application running on a system is unable to allocate enough memory to perform its tasks. This can happen when the system's memory is insufficient or when there is a memory leak in the application's code. When this incident occurs, the application may crash, become unresponsive, or produce incorrect results. It is important to diagnose and resolve this issue as soon as possible to ensure the smooth functioning of the application."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check available memory"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `free -m`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check system logs for any relevant error messages"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `dmesg | grep -i error`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Spark logs for any relevant error messages"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `grep -i error ${PATH_TO_SPARK_LOGS}`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Spark configuration settings"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `cat ${PATH_TO_SPARK_CONFIGURATION_FILE}`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check for any running processes that may be consuming memory"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `ps aux --sort=-%mem | head`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check for any Java processes that may be consuming memory"
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `jmap -heap ${PID_OF_JAVA_PROCESS}`"
+    },
+    {
+      "name": "cell_14",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check for any other system or application processes that may be consuming memory"
+    },
+    {
+      "name": "cell_15",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `top`"
+    },
+    {
+      "name": "cell_16",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Increase the memory capacity of the server in use."
+    },
+    {
+      "name": "cell_17",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_increase_memory($NEW_MEMORY_LIMIT)"
+    }
+  ]
+}
